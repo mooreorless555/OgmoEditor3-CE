@@ -63,7 +63,7 @@ class DecalSelectTool extends DecalTool
 				layerEditor.selected = [];
 				for (decal in DecalSelectTool.inClipboard)
 				{
-					var clone = new Decal(decal.position.clone(), decal.path, decal.texture, decal.origin.clone(), decal.scale.clone(), decal.rotation);
+					var clone = new Decal(decal.position.clone(), decal.path, decal.texture, decal.origin.clone(), decal.scale.clone(), decal.rotation, decal.values);
 					(cast layerEditor.layer:DecalLayer).decals.push(clone);
 					layerEditor.selected.push(clone);
 				}
