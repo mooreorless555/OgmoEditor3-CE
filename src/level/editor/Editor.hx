@@ -57,7 +57,7 @@ class Editor
 	var resizingRight:Bool = false;
 	var resizingLayers:Bool = false;
 	var resizingPalette:Bool = false;
-	var lastPaletteHeight:Float = 0;
+	var lastPaletteHeight:Float = 500;
 	var state:Null<EditorState>;
 
 	var executingPlayCommand:Null<ChildProcessObject>;
