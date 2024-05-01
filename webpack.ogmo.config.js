@@ -10,7 +10,7 @@ module.exports = (env, argv) => {
     target: 'electron-renderer',
     output: {
       filename: 'ogmo.js',
-      path: dist
+      path: dist,
     },
     module: {
       rules: [
@@ -19,26 +19,26 @@ module.exports = (env, argv) => {
           loader: 'haxe-loader',
           options: {
             extra: `-D build_mode=${buildMode}`,
-            debug: debugMode
-          }
+            debug: debugMode,
+          },
         },
         {
           test: /\.(png|jpg|gif)$/,
-          use: 'file-loader'
+          use: 'file-loader',
         },
         {
           test: /\.(woff|woff2|eot|ttf|otf)$/,
-          use: 'file-loader'
+          use: 'file-loader',
         },
         {
-          test:/\.(s*)css$/,
-          use:['style-loader','css-loader', 'sass-loader']
+          test: /\.(s*)css$/,
+          use: ['style-loader', 'css-loader', 'sass-loader'],
         },
         {
           test: /\.node$/,
-          use: 'node-loader'
-        }
-      ]
+          use: 'node-loader',
+        },
+      ],
     },
     devtool: 'source-map',
     devServer: {
@@ -48,17 +48,13 @@ module.exports = (env, argv) => {
       stats: {
         colors: true,
         chunks: false,
-        children: false
+        children: false,
       },
       before() {
-        spawn(
-          'electron',
-          [dist],
-          { shell: true, env: process.env, stdio: 'inherit' }
-        )
-        .on('close', code => process.exit(0))
-        .on('error', spawnError => console.error(spawnError))
-      }
-    }
-  }
-}
+        spawn('electron', [dist], { shell: true, env: process.env, stdio: 'inherit' })
+          .on('close', (code) => process.exit(0))
+          .on('error', (spawnError) => console.error(spawnError));
+      },
+    },
+  };
+};
