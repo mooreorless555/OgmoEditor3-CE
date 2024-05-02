@@ -129,6 +129,22 @@ class ProjectLayersPanel extends ProjectEditorPanel
 						}
 					});
 				});
+				menu.addOption("Duplicate Layer", "trash", function()
+					{
+						Popup.open("Duplicate Layer", "trash", "Duplicate layer <span class='monospace'>" + current.data.name + "</span>?", ["Confirm", "Cancel"], function(btn)
+						{
+							if (btn == 0)
+							{
+								var index = OGMO.project.layers.indexOf(current.data);
+								if (index >= 0) {
+									OGMO.project.layers.push(layer);
+								}
+
+								refreshList();
+								if (inspecting == current.data) inspect(null, false);
+							}
+						});
+					});
 				current.highlighted = true;
 				menu.open();
 			}
