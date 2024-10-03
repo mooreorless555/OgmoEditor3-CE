@@ -1,5 +1,6 @@
 package modules.decals;
 
+import js.node.Path;
 import util.Fields;
 import util.ItemList;
 import level.data.Value;
@@ -78,12 +79,29 @@ class DecalSelectionPanel extends SidePanel
 
 				item.onclick = function (_)
 				{
-					if (OGMO.ctrl)
-						layerEditor.toggleSelected(arr);
-					else
-						layerEditor.selected = arr;
-					layerEditor.selectedChanged = true;
-					EDITOR.dirty();
+					// if (OGMO.ctrl)
+					// 	layerEditor.toggleSelected(arr);
+					// else
+					// 	layerEditor.selected = arr;
+					// layerEditor.selectedChanged = true;
+					// EDITOR.dirty();
+					if (OGMO.ctrl) {
+						var decal = sel[0];
+						trace(layerEditor.brush);
+						// var path = haxe.io.Path.normalize(layerEditor.brush);
+						// var relative = Path.join((cast template : DecalLayerTemplate).folder,  layerEditor.brush.path);
+						// trace(relative);
+						var newPath = ~/\\/g.replace(layerEditor.brush.path, "/");
+						var objectsIndex = newPath.indexOf("objects/");
+						trace("objects index");
+						trace(objectsIndex);
+						if (objectsIndex != -1) {
+							decal.path = newPath.substr(objectsIndex);
+						} else {
+							decal.path = newPath;
+						}
+						decal.texture = layerEditor.brush;
+					}
 				};
 			}
 
@@ -121,6 +139,8 @@ class DecalSelectionPanel extends SidePanel
 						EDITOR.dirty();
 					}
 				});
+				Fields.createSettingsBlock(properties, Fields.createField("Decal ID", Std.string(decal.decalId)), SettingsBlock.Full, "Decal ID", SettingsBlock.OverTitle);
+
 				Fields.createSettingsBlock(properties, decalPos, SettingsBlock.Full, "Position", SettingsBlock.OverTitle);
 
 				if ((cast layerEditor.template : DecalLayerTemplate).rotatable)

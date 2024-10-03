@@ -1,6 +1,7 @@
 -lib electron
 -lib jQueryExtern
 -lib haxe-loader
+-lib uuid
 -cp src
 -dce full
 -js bin/ogmo.js

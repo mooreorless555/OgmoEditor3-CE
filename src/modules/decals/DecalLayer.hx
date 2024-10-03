@@ -3,6 +3,7 @@ package modules.decals;
 import rendering.Texture;
 import js.node.Path;
 import level.data.Layer;
+import uuid.Uuid;
 
 class DecalLayer extends Layer
 {
@@ -35,6 +36,7 @@ class DecalLayer extends Layer
 			var origin = Imports.vector(decal, "originX", "originY", new Vector(0.5, 0.5));
 			var scale = Imports.vector(decal, "scaleX", "scaleY", new Vector(1, 1));
 			var rotation = Imports.float(decal.rotation, 0);
+			var decalId = Imports.string(decal.decalId, Uuid.nanoId());
 
 			var values = Imports.values(decal, (cast template:DecalLayerTemplate).values);
 
@@ -45,7 +47,7 @@ class DecalLayer extends Layer
 					break;
 				}
 
-			this.decals.push(new Decal(position, path, texture, origin, scale, rotation, values));
+			this.decals.push(new Decal(decalId, position, path, texture, origin, scale, rotation, values));
 		}
 	}
 

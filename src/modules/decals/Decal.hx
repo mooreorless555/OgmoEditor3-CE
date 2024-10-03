@@ -2,9 +2,10 @@ package modules.decals;
 
 import level.data.Value;
 import rendering.Texture;
+import uuid.Uuid;
 
-class Decal
-{
+class Decal {
+	public var decalId:String;
 	public var position:Vector;
 	public var scale:Vector;
 	public var origin:Vector;
@@ -15,8 +16,8 @@ class Decal
 	public var height(get, never):Int;
 	public var values:Array<Value>;
 
-	public function new(position:Vector, path:String, texture:Texture, ?origin:Vector, ?scale:Vector, ?rotation:Float, ?values:Array<Value>)
-	{
+	public function new(decalId:String, position:Vector, path:String, texture:Texture, ?origin:Vector, ?scale:Vector, ?rotation:Float, ?values:Array<Value>) {
+		this.decalId = decalId == null ? Uuid.nanoId() : decalId;
 		this.position = position.clone();
 		this.texture = texture;
 		this.path = path;
@@ -26,100 +27,84 @@ class Decal
 		this.origin = origin == null ? new Vector(0.5, 0.5) : origin.clone();
 	}
 
-	public function save(scaleable:Bool, rotatable:Bool):Dynamic
-	{
+	public function save(scaleable:Bool, rotatable:Bool):Dynamic {
 		var data:Dynamic = {};
 		data._name = "decal";
 		data.x = position.x;
 		data.y = position.y;
-		if (scaleable)
-		{
+		if (scaleable) {
 			data.scaleX = scale.x;
 			data.scaleY = scale.y;
 		}
-		if (rotatable) data.rotation = OGMO.project.anglesRadians ? rotation : rotation * Calc.RTD;
+		if (rotatable)
+			data.rotation = OGMO.project.anglesRadians ? rotation : rotation * Calc.RTD;
 		data.texture = FileSystem.normalize(path);
 		data.originX = origin.x;
 		data.originY = origin.y;
+		data.decalId = decalId;
+		data.corners = getCorners(2);
 		Export.values(data, values);
 
 		return data;
 	}
 
-	public function clone():Decal
-	{
-		return new Decal(position, path, texture, origin, scale, rotation, values);
+	public function clone():Decal {
+		return new Decal(null, position, path, texture, origin, scale, rotation, values);
 	}
 
-	function get_width():Int
-	{
+	function get_width():Int {
 		return texture != null ? texture.width : 32;
 	}
 
-	function get_height():Int
-	{
+	function get_height():Int {
 		return texture != null ? texture.height : 32;
 	}
 
-	public function rotate(diff:Float)
-	{
+	public function rotate(diff:Float) {
 		rotation = rotation + diff;
 	}
 
-	public function resize(diff:Vector)
-	{
+	public function resize(diff:Vector) {
 		diff.scale(0.1);
 
-		scale.set(
-			Calc.roundTo(scale.x + diff.x, 3),
-			Calc.roundTo(scale.y + diff.y, 3)
-		);
+		scale.set(Calc.roundTo(scale.x + diff.x, 3), Calc.roundTo(scale.y + diff.y, 3));
 		// TODO - there's probably a more elegant way of doing this! -01010111
-		if (OGMO.ctrl) return;
+		if (OGMO.ctrl)
+			return;
 		scale.x = Calc.snap(scale.x, 1);
 		scale.y = Calc.snap(scale.y, 1);
 	}
 
-	public function drawSelectionBox(origin:Bool)
-	{
+	public function drawSelectionBox(origin:Bool) {
 		var corners = getCorners(2);
 		EDITOR.overlay.drawLine(corners[0], corners[1], Color.green);
 		EDITOR.overlay.drawLine(corners[1], corners[3], Color.green);
 		EDITOR.overlay.drawLine(corners[2], corners[3], Color.green);
 		EDITOR.overlay.drawLine(corners[2], corners[0], Color.green);
-		if (!origin) return;
-		EDITOR.overlay.drawLine(
-			Vector.midPoint(corners[0], corners[1]),
-			Vector.midPoint(corners[2], corners[3]),
-			Color.white
-		);
-		EDITOR.overlay.drawLine(
-			Vector.midPoint(corners[0], corners[2]),
-			Vector.midPoint(corners[1], corners[3]),
-			Color.white
-		);
+		if (!origin)
+			return;
+		EDITOR.overlay.drawLine(Vector.midPoint(corners[0], corners[1]), Vector.midPoint(corners[2], corners[3]), Color.white);
+		EDITOR.overlay.drawLine(Vector.midPoint(corners[0], corners[2]), Vector.midPoint(corners[1], corners[3]), Color.white);
 		EDITOR.overlay.drawRect(position.x - 2, position.y - 2, 4, 4, Color.white);
 	}
 
-	public function getCorners(pad:Float):Array<Vector>
-	{
+	public function getCorners(pad:Float):Array<Vector> {
 		var corners:Array<Vector> = [
 			new Vector(-pad - width * origin.x * scale.x, -pad - height * origin.y * scale.y),
-			new Vector(pad + width * (1-origin.x) * scale.x, -pad - height * origin.y * scale.y),
-			new Vector(-pad - width * origin.x * scale.x, pad + height * (1-origin.y) * scale.y),
-			new Vector(pad + width * (1-origin.x) * scale.x, pad + height * (1-origin.y) * scale.y)
+			new Vector(pad + width * (1 - origin.x) * scale.x, -pad - height * origin.y * scale.y),
+			new Vector(-pad - width * origin.x * scale.x, pad + height * (1 - origin.y) * scale.y),
+			new Vector(pad + width * (1 - origin.x) * scale.x, pad + height * (1 - origin.y) * scale.y)
 		];
 
-		for (corner in corners)
-		{
+		for (corner in corners) {
 			var x = corner.x;
 			var y = corner.y;
 			corner.x = x * rotation.cos() - y * rotation.sin();
 			corner.y = x * rotation.sin() + y * rotation.cos();
 		}
-		for (corner in corners) corner.add(position);
+		for (corner in corners)
+			corner.add(position);
 
 		return corners;
 	}
-
 }
